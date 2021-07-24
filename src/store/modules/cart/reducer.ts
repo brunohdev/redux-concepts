@@ -1,9 +1,10 @@
 import { Reducer } from "redux"
 import produce from 'immer'
-import { CartState } from "./types"
+import { ActionTypes, CartState } from "./types"
 
 const INITIAL_STATE: CartState = {
-  items: []
+  items: [],
+  failedStockCheck: []
 }
 
 const cart: Reducer<CartState> = (state = INITIAL_STATE, action) => {
@@ -11,7 +12,7 @@ const cart: Reducer<CartState> = (state = INITIAL_STATE, action) => {
   // make immutability less verbose
   return produce(state, draft => {
     switch (action.type) {
-      case 'ADD_PRODUCT_TO_CART': {
+      case ActionTypes.addProductToCartSuccess: {
         const { product } = action.payload
 
         const productInCartIndex = draft.items.findIndex(item =>
@@ -40,6 +41,11 @@ const cart: Reducer<CartState> = (state = INITIAL_STATE, action) => {
         //     }
         //   ]
         // }
+      }
+      case ActionTypes.addProductToCartFailure: {
+        draft.failedStockCheck.push(action.payload.productId)
+
+        break
       }
       default: {
         return draft
